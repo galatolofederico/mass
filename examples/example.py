@@ -1,10 +1,10 @@
-from simulator.DroneSimulator import DroneSimulator
+from mass import MASS
 import numpy as np
 import time
 
 start_time = time.time()
 
-drone_simulator = DroneSimulator(
+simulator = MASS(
     bitmap = './maps/test-with-2-levels.bmp',
     batch_size = 1,
     observation_range = 5,
@@ -21,9 +21,8 @@ drone_simulator = DroneSimulator(
 stig_actions = np.array([[[0,1],[1,2],[2,3]]])
 actions = np.array([[[1,0],[1,0],[1,0]]])
 
-for i in range(2):
-    obs, rew, done, info = drone_simulator.step(actions, stig_actions)
-    print(obs)
-    print("--- %s seconds ---" % (time.time() - start_time))
-
-print("--- %s seconds ---" % (time.time() - start_time))
+while True:
+    obs, rew, done, info = simulator.step(actions, stig_actions)
+    print(obs, rew)
+    time.sleep(1)
+    simulator.render()
