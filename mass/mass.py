@@ -28,7 +28,8 @@ class MASS:
         self.__init_agents()
 
         self.__init_stigmergy_space()
-        self.__init_rendering_parameters()
+        
+        self.__rendering_initialized = False
 
     def __init_simulator_parameters(self, bitmap, batch_size, agent_size, observation_range, amount_of_agents,
                                     stigmergy_evaporation_speed, stigmergy_colours, inertia, collision_detection,
@@ -219,6 +220,7 @@ class MASS:
             self.__image_semaphore = threading.Lock()
             rendering = threading.Thread(target=self.__init_rendering)
             rendering.start()
+            self.__rendering_initialized = True
 
     def __init_rendering(self):
         app = QtGui.QApplication([])
@@ -406,6 +408,7 @@ class MASS:
 
     def render(self):
         if self.__rendering_allowed:
+            if not self.__rendering_initialized: self.__init_rendering_parameters()
             environment = np.copy(self.__environment_bitmap)
             agents = np.sum(self.__drawn_agents[0], axis=0)
             stigmergy_space = self.__stigmergy_space[0]
