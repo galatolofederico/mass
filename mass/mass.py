@@ -429,7 +429,7 @@ class MASS:
     def reset(self):
         observation_dimension = 2 * (self.__agent_size + self.__observation_range) + 1
         observations_table = np.zeros((self.__batch_size, self.__amount_of_agents,
-                                       observation_dimension, observation_dimension))
+                                       observation_dimension, observation_dimension, 4))
 
         self.__init_agents_parameters()
         self.__init_agents()
