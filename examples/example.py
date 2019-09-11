@@ -21,6 +21,7 @@ simulator = MASS(
 stig_actions = np.array([[[0,1],[1,2],[2,3]]])
 actions = np.array([[[1,0],[1,0],[1,0]]])
 
+simulator.reset()
 while True:
     obs, rew, done, info = simulator.step(actions, stig_actions)
     print(obs.shape, rew.shape)
