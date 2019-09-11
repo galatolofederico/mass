@@ -357,9 +357,10 @@ class MASS:
 
         agents = np.sum(self.__drawn_agents[batch_index], axis=0)
         stigmergy_space = np.sum(self.__stigmergy_space[batch_index], axis=0)
-        environment = self.__targets + self.__collision + agents + stigmergy_space
-        environment[environment > 1] = 1
-
+        
+        environment = np.stack((self.__targets,  self.__collision, agents, stigmergy_space)) # shape = (4, x, x)
+        environment = environment.reshape(((*environment.shape[1:], environment.shape[0]))) # shape = (x, x, 4)
+        
         if self.__out_of_map(batch_index, agent_index, observation_radius):
             # Map view enlargement: the agent will see -1 if a space is outside the map
             # The position of the agent is reevaluated according to the new map dimensions
@@ -388,9 +389,10 @@ class MASS:
 
         if position_axis_1 + observation_radius >= self.__targets.shape[1]:
             enlargement_axis_after_1 = position_axis_1 + observation_radius - (self.__targets.shape[1] - 1)
-
+        
         enlarged_map = np.pad(environment, [(enlargement_axis_before_0, enlargement_axis_after_0),
-                                            (enlargement_axis_before_1, enlargement_axis_after_1)],
+                                            (enlargement_axis_before_1, enlargement_axis_after_1),
+                                            (0, 0)],
                               constant_values=(-1))
 
         return enlarged_map, position_axis_0 + enlargement_axis_before_0, position_axis_1 + enlargement_axis_before_1
@@ -447,7 +449,7 @@ class MASS:
 
         observation_dimension = 2*(self.__agent_size + self.__observation_range) + 1
         observations_table = np.zeros((self.__batch_size, self.__amount_of_agents,
-                                       observation_dimension, observation_dimension))
+                                       observation_dimension, observation_dimension, 4))
 
         rewards_table = np.zeros((self.__batch_size, self.__amount_of_agents, 1))
 

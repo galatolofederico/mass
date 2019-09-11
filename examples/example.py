@@ -23,6 +23,6 @@ actions = np.array([[[1,0],[1,0],[1,0]]])
 
 while True:
     obs, rew, done, info = simulator.step(actions, stig_actions)
-    print(obs, rew)
+    print(obs.shape, rew.shape)
     time.sleep(1)
     simulator.render()
