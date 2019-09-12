@@ -22,10 +22,10 @@ class Stigmergy (Agent):
     def move(self, direction):
         pass
 
-    def step(self, direction):
+    def step(self):
         self.value = (self.value - self.evaporation) if self.value > 0 else 0
         if self.value == 0:
-            self.model.stigmergies.remove(self)
+            self.model.grid.remove_agent(self)
             print("%s has been removed" % self.unique_id)
         return self.value
 
@@ -36,9 +36,9 @@ class Prey(Agent):
             self.pos,
             moore=True,
             include_center=False)
-        print( self.pos)
-        new_position = (self.pos[0] + 1, self.pos[1] + 1)
-        self.model.grid.move_agent(self, new_position)
+
+        self.model.grid.move_to_empty(self)
+
 
     def step(self):
         self.move()
@@ -55,7 +55,7 @@ class StigmergyPrey (Model):
             y = self.random.randrange(self.grid.height)
             agent = None
             if i % 2 == 0:
-                agent = Stigmergy(i, self, 20*i, i, 1)
+                agent = Stigmergy(i, self, 20*(i+1), i, 1)
                 self.stigmergies.append(agent)
             else:
                 agent = Prey(i, self)
@@ -65,8 +65,10 @@ class StigmergyPrey (Model):
 
     def step(self, directions):
         observations = []
-        for stigmergy, direction in zip(self.stigmergies, directions):
-            observations.append(stigmergy.step(direction))
+        for stigmergy in self.stigmergies:
+            stig_value = stigmergy.step()
+            if stig_value == 0: self.stigmergies.remove(stigmergy)
+            observations.append(stig_value)
 
         for prey in self.preys:
             prey.step()
